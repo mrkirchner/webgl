@@ -1,0 +1,14 @@
+# dependencies
+/node_modules
+
+# IDEs and editors
+/.idea
+
+# Parcel
+/.parcel-cache
+/build
+/dist
+
+# System Files
+.DS_Store
+Thumbs.db

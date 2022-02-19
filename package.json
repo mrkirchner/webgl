@@ -1,0 +1,25 @@
+{
+  "name": "webgl",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "npm run clean",
+    "start": "parcel src/index.html",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./.parce-cache && rm -rf ./dist"
+  },
+  "author": "Ben Kirchner",
+  "license": "MIT",
+  "dependencies": {
+    "pixi.js": "^6.2.2"
+  },
+  "devDependencies": {
+    "parcel": "^2.3.2",
+    "prettier": "^2.5.1",
+    "querystring-es3": "^0.2.1",
+    "typescript": "^4.5.5"
+  },
+  "browserslist": [
+    "ie 10"
+  ]
+}
