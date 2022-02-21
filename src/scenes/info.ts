@@ -13,6 +13,9 @@ export default class Info extends Scene {
 
   private isTransitioning: boolean = false;
 
+  // TODO
+  // Construct is taking a snapshot of content but should be possibly fetching data on load
+  // due to not having another api to supplement or fetch data this is a hack
   constructor(main: Main, content: Content) {
     super(main);
 
@@ -23,27 +26,32 @@ export default class Info extends Scene {
   }
 
   async onInit() {
+    // TODO
+    // Handle fetching data for more information about content.
+    // It seems apis given do not provide description or other meta data.
+
     const title =
       this.content.text?.title?.full?.series?.default?.content ||
       this.content.text?.title?.full?.program?.default?.content ||
       this.content.text?.title?.full?.default?.default?.content ||
       '';
 
+    console.log(this.content.image);
+
     const url =
-      this.content.image?.hero_collection['1.78']?.default?.default?.url ||
-      this.content.image?.hero_collection['1.78']?.default?.default?.url ||
-      this.content.image?.hero_collection['1.78']?.default?.default?.url ||
-      this.content.image?.background['1.78']?.series?.default?.url ||
-      this.content.image?.background['1.78']?.program?.default?.url ||
-      this.content.image?.background['1.78']?.default?.default?.url ||
-      this.content.image?.background_details['1.78']?.series?.default?.url ||
-      this.content.image?.background_details['1.78']?.program?.default?.url ||
-      this.content.image?.background_details['1.78']?.default?.default?.url ||
+      this.content.image?.hero_collection?.['1.78']?.default?.default?.url ||
+      this.content.image?.hero_collection?.['1.78']?.default?.default?.url ||
+      this.content.image?.hero_collection?.['1.78']?.default?.default?.url ||
+      this.content.image?.background?.['1.78']?.series?.default?.url ||
+      this.content.image?.background?.['1.78']?.program?.default?.url ||
+      this.content.image?.background?.['1.78']?.default?.default?.url ||
+      this.content.image?.background_details?.['1.78']?.series?.default?.url ||
+      this.content.image?.background_details?.['1.78']?.program?.default?.url ||
+      this.content.image?.background_details?.['1.78']?.default?.default?.url ||
       '';
 
     let background;
     if (url) {
-      // TODO Handle when url is invalid or bad data or missing
       background = PIXI.Sprite.from(url);
     }
 
@@ -68,7 +76,7 @@ export default class Info extends Scene {
     basicText.y = 50;
     this.addChild(basicText);
 
-    // Title
+    // Rating
     if (this.content?.ratings?.length) {
       const rating = new PIXI.Text(
         this.content?.ratings[0].value || 'Unknown',
@@ -83,6 +91,22 @@ export default class Info extends Scene {
       rating.y = 100;
       this.addChild(rating);
     }
+
+    const description = new PIXI.Text(
+      'Description Placeholder \n\n' +
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      new TextStyle({
+        fontFamily: 'Arial',
+        fill: ['#ffffff'],
+        fontSize: 18,
+        fontWeight: 'lighter',
+        wordWrap: true,
+        wordWrapWidth: 400,
+      })
+    );
+    description.x = 55;
+    description.y = 150;
+    this.addChild(description);
   }
 
   async onDestroy() {

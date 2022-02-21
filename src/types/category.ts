@@ -1,5 +1,7 @@
 import { Content } from './content';
 
+// TODO
+// Incomplete Set Interface
 export interface Category {
   set: {
     setId: string;

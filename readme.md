@@ -26,8 +26,8 @@ Runs the app at [http://localhost:1234](http://localhost:1234)
 
 ## Improvements
 
-- Animations (Possibly animate )
-- Better UI Tools (Possibly pixi-ui and layers )
+- Animations (Possibly animate)
+- Better UI Tools (Possibly pixi-ui and layers)
 - Null Culling
 - Caching Purging
 - Loading Data on Fly *Issue with loading data while scrolling
@@ -35,5 +35,5 @@ Runs the app at [http://localhost:1234](http://localhost:1234)
 
 ## Known Issues
 
-- Loading Data while scroll causes weird layout issues, could fix by refactoring animations or move to an animation library.
-- Hack to handle url missing actual image, currently catching unhandled promise at window and checking error for url, should be using the built in loader but was having issues with texture not being returned.  Also Brave/Chrome browser support hack.
+- Loading Data while scroll causes weird layout issues, could fix by handling animations differently.
+- Hack to handle url missing actual image, currently catching unhandled promise at window and checking error for url, should be using the built in loader but was having issues with texture not being returned.  Also Brave/Chrome browser doesn't support hack.

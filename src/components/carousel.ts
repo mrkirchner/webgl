@@ -15,7 +15,7 @@ export default class Carousel
   public cards: Card[] = [];
   public selectedColumn = -1;
 
-  private visibleColumns: number;
+  private readonly visibleColumns: number;
   private visibleColumnRange: [number, number];
 
   private scrollXTo: number = 0;

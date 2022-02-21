@@ -1,3 +1,5 @@
+// TODO
+// Incomplete Content Interface
 export interface Content {
   contentId?: string;
   collectionId?: string;
@@ -130,6 +132,8 @@ export interface Content {
   };
 }
 
+// TODO
+// Incomplete Content Rating Interface
 export interface ContentRating {
   value: string;
   description: string;
