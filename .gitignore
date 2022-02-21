@@ -1,14 +1,18 @@
 # dependencies
 /node_modules
 
-# IDEs and editors
-/.idea
-
 # Parcel
 /.parcel-cache
-/build
 /dist
 
-# System Files
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# misc
 .DS_Store
-Thumbs.db
+*.pem
+
+# webstorm
+/.idea

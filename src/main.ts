@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import Scene from './types/scene';
+import Scene from './scenes/scene';
 import Home from './scenes/home';
 
 export class Main {
@@ -17,8 +17,9 @@ export class Main {
       width,
       height,
       resolution,
-      backgroundColor: 0x080808,
+      backgroundColor: 0x1f2022,
       antialias: true,
+      resizeTo: window,
     });
     parent.replaceChild(this.application.view, parent.lastElementChild);
 
@@ -26,7 +27,7 @@ export class Main {
       this.update(delta);
     });
 
-    this.toScene(new Home(this)).then();
+    this.toScene(new Home(this));
   }
 
   private update(delta: number): void {
@@ -39,14 +40,13 @@ export class Main {
     // Remove Existing Scene
     if (this.currentScene) {
       await this.currentScene.onDestroy();
+      this.currentScene.destroy(true);
+
       this.application.stage.removeChildren();
     }
 
-    // Create Container and Scene
-    const container = new PIXI.Container();
-
-    await scene.onStart(container);
-    this.application.stage.addChild(container);
+    await scene.onInit();
+    this.application.stage.addChild(scene);
 
     this.currentScene = scene;
   }
