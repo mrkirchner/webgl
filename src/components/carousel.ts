@@ -80,7 +80,7 @@ export default class Carousel
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
 
-      const card = new Card(item, i);
+      const card = new Card(item);
       card.position.set(i * CARD_WIDTH + 30, 50);
 
       if (i === selected) {
@@ -93,9 +93,7 @@ export default class Carousel
   }
 
   public setSelected(windowSelected: number): void {
-    const selected = this.visibleColumnRange[0] + windowSelected;
-
-    this.selectedColumn = selected;
+    this.selectedColumn = this.visibleColumnRange[0] + windowSelected;
     this.cards[this.selectedColumn].setSelected(true);
   }
 

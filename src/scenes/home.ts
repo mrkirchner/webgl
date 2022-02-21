@@ -8,11 +8,11 @@ const CAROUSEL_HEIGHT = 275;
 const SCROLL_SPEED = 5;
 
 export default class Home extends Scene {
-  private resizeEvent = (e) => this.onResize(e);
+  private resizeEvent = () => this.onResize();
   private keyboardEvent = (e) => this.onKeyboardDown(e);
 
-  private carousels: Carousel[] = [];
-  private selectedCursor: [number, number] = [0, 0];
+  private readonly carousels: Carousel[] = [];
+  private readonly selectedCursor: [number, number] = [0, 0];
 
   private visibleRows: number;
   private visibleRowRange: [number, number];
@@ -134,7 +134,7 @@ export default class Home extends Scene {
         break;
     }
   }
-  onResize(e: UIEvent) {
+  onResize() {
     this.visibleRows = Math.ceil(window.innerHeight / 500);
     this.visibleRowRange = [
       this.visibleRowRange[0],

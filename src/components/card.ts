@@ -5,13 +5,11 @@ import { Content } from '../types/content';
 export default class Card extends PIXI.Container implements UpdatableComponent {
   private errorEvent = (e) => this.onError(e);
 
-  private content: Content;
-  private index: number;
-
+  private readonly content: Content;
   public isSelected: boolean;
   private scaleTo: number = 0;
 
-  constructor(content, index) {
+  constructor(content) {
     super();
 
     window.addEventListener('unhandledrejection', this.errorEvent);
@@ -70,15 +68,15 @@ export default class Card extends PIXI.Container implements UpdatableComponent {
   // Loader was not method was not returning texture, could use shared loaded would have to batch images
   onError(e) {
     const url =
-      this.content.image.tile['1.78']?.series?.default?.url ||
-      this.content.image.tile['1.78']?.program?.default?.url ||
-      this.content.image.tile['1.78']?.default?.default?.url ||
+      this.content.image?.tile['1.78']?.series?.default?.url ||
+      this.content.image?.tile['1.78']?.program?.default?.url ||
+      this.content.image?.tile['1.78']?.default?.default?.url ||
       '';
 
     if (e.reason.target.currentSrc.includes(url)) {
-      const texture = PIXI.Texture.from(require('../images/placeholder.jpg'));
-
-      (this.getChildAt(0) as PIXI.Sprite).texture = texture;
+      (this.getChildAt(0) as PIXI.Sprite).texture = PIXI.Texture.from(
+        require('../images/placeholder.jpg')
+      );
       (this.getChildAt(0) as PIXI.Sprite).anchor.set(0.5, 0.5);
       (this.getChildAt(0) as PIXI.Sprite).scale.set(0.75, 0.75);
       (this.getChildAt(0) as PIXI.Sprite).x = 190;
