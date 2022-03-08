@@ -12,23 +12,36 @@ export default class Carousel
   extends PIXI.Container
   implements UpdatableComponent
 {
+  public id: string;
+  public refId?: string;
+
   public cards: Card[] = [];
-  public selectedColumn = -1;
+  public selectedCard = -1;
 
   private readonly visibleColumns: number;
+  // Probably better to use interface instead of tuple for readablity
   private visibleColumnRange: [number, number];
 
   private scrollXTo: number = 0;
+  private hasLoadedCards: boolean = false;
 
   constructor(category: Category, selected: number = -1) {
     super();
 
+    this.id = category?.set?.setId;
+    this.refId = category?.set?.refId;
+
     this.cards = [];
-    this.selectedColumn = selected;
-
-    this.visibleColumns = Math.ceil(window.innerWidth / (350 * 1.75));
+    this.selectedCard = selected;
+    this.visibleColumns = Math.floor(window.innerWidth / CARD_WIDTH) - 1;
     this.visibleColumnRange = [0, this.visibleColumns];
+    this.hasLoadedCards = false;
 
+    this.onLoadCategoryTitle(category);
+    this.onLoadCards(category);
+  }
+
+  onLoadCategoryTitle(category: Category) {
     // Carousel Header
     const basicText = new PIXI.Text(
       category?.set?.text?.title?.full?.set?.default?.content || 'Unknown',
@@ -42,12 +55,29 @@ export default class Carousel
     basicText.x = 20;
     basicText.y = 5;
     this.addChild(basicText);
-
-    // Cards
-    this.setCategory(category, selected);
   }
+  onLoadCards(category: Category, selected: number = -1) {
+    const items = category?.set?.items || [];
 
-  public onUpdate(delta: number) {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      const card = new Card(item);
+      card.position.set(i * CARD_WIDTH + 30, 50);
+
+      if (i === selected) {
+        card.setSelected(true);
+      }
+
+      this.addChild(card);
+      this.cards.push(card);
+    }
+
+    if (this.cards?.length) {
+      this.hasLoadedCards = true;
+    }
+  }
+  onUpdate(delta: number) {
     if (this.scrollXTo > 0) {
       const x = SCROLL_SPEED * delta;
 
@@ -73,40 +103,21 @@ export default class Carousel
     }
   }
 
-  public setCategory(category: Category, selected: number = -1) {
-    // Cards
-    const items = category?.set?.items || [];
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-
-      const card = new Card(item);
-      card.position.set(i * CARD_WIDTH + 30, 50);
-
-      if (i === selected) {
-        card.setSelected(true);
-      }
-
-      this.addChild(card);
-      this.cards.push(card);
-    }
+  setSelected(windowSelected: number): void {
+    this.selectedCard = this.visibleColumnRange[0] + windowSelected;
+    this.cards[this.selectedCard].setSelected(true);
   }
 
-  public setSelected(windowSelected: number): void {
-    this.selectedColumn = this.visibleColumnRange[0] + windowSelected;
-    this.cards[this.selectedColumn].setSelected(true);
-  }
+  onScrollRight(): number {
+    if (this.selectedCard + 1 < this.cards.length) {
+      this.cards[this.selectedCard].setSelected(false);
 
-  public onScrollRight(): number {
-    if (this.selectedColumn + 1 < this.cards.length) {
-      this.cards[this.selectedColumn].setSelected(false);
-
-      this.selectedColumn = Math.min(
+      this.selectedCard = Math.min(
         this.visibleColumnRange[1],
-        this.selectedColumn + 1
+        this.selectedCard + 1
       );
 
-      if (this.selectedColumn >= this.visibleColumnRange[1]) {
+      if (this.selectedCard >= this.visibleColumnRange[1]) {
         this.visibleColumnRange = [
           this.visibleColumnRange[0] + 1,
           Math.min(
@@ -117,7 +128,7 @@ export default class Carousel
 
         this.scrollXTo = this.scrollXTo - 400;
       }
-      this.cards[this.selectedColumn].setSelected(true);
+      this.cards[this.selectedCard].setSelected(true);
     }
 
     let index = 0;
@@ -126,7 +137,7 @@ export default class Carousel
       i <= this.visibleColumnRange[1];
       i++
     ) {
-      if (i === this.selectedColumn) {
+      if (i === this.selectedCard) {
         break;
       } else {
         index++;
@@ -135,14 +146,13 @@ export default class Carousel
 
     return index;
   }
+  onScrollLeft(): number {
+    if (this.selectedCard - 1 >= 0) {
+      this.cards[this.selectedCard].setSelected(false);
 
-  public onScrollLeft(): number {
-    if (this.selectedColumn - 1 >= 0) {
-      this.cards[this.selectedColumn].setSelected(false);
+      this.selectedCard = Math.max(0, this.selectedCard - 1);
 
-      this.selectedColumn = Math.max(0, this.selectedColumn - 1);
-
-      if (this.selectedColumn < this.visibleColumnRange[0]) {
+      if (this.selectedCard < this.visibleColumnRange[0]) {
         this.visibleColumnRange = [
           this.visibleColumnRange[0] - 1,
           this.visibleColumnRange[0] - 1 + this.visibleColumns,
@@ -150,7 +160,7 @@ export default class Carousel
 
         this.scrollXTo = this.scrollXTo + 400;
       }
-      this.cards[this.selectedColumn].setSelected(true);
+      this.cards[this.selectedCard].setSelected(true);
     }
 
     let index = 0;
@@ -159,7 +169,7 @@ export default class Carousel
       i <= this.visibleColumnRange[1];
       i++
     ) {
-      if (i === this.selectedColumn) {
+      if (i === this.selectedCard) {
         break;
       } else {
         index++;
@@ -168,16 +178,32 @@ export default class Carousel
 
     return index;
   }
-
-  public onSelect(): Content {
-    return this.cards[this.selectedColumn].getContent();
+  onSelect(): Content {
+    return this.cards[this.selectedCard].content;
   }
 
-  public reset(): void {
-    if (this.selectedColumn >= 0) {
-      this.cards[this.selectedColumn].setSelected(false);
+  reset(): void {
+    if (this.selectedCard >= 0) {
+      this.cards[this.selectedCard].setSelected(false);
     }
 
-    this.selectedColumn = -1;
+    this.selectedCard = -1;
+  }
+
+  async loadRefData(): Promise<void> {
+    if (this?.refId && !this.hasLoadedCards) {
+      const refResponse = await fetch(`/api/sets/${this.refId}.json`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const { data } = await refResponse.json();
+
+      await this.onLoadCards({
+        set:
+          data?.CuratedSet || data?.TrendingSet || data?.PersonalizedCuratedSet,
+      });
+    }
   }
 }

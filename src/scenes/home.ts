@@ -12,7 +12,8 @@ export default class Home extends Scene {
   private keyboardEvent = (e) => this.onKeyboardDown(e);
 
   private readonly carousels: Carousel[] = [];
-  private readonly selectedCursor: [number, number] = [0, 0];
+  // Probably better to use interface instead of tuple for readablity
+  private selectedCursor: [number, number] = [0, 0];
 
   private visibleRows: number;
   private visibleRowRange: [number, number];
@@ -29,7 +30,7 @@ export default class Home extends Scene {
     this.carousels = [];
     this.selectedCursor = [0, 0];
 
-    this.visibleRows = Math.ceil(window.innerHeight / (CAROUSEL_HEIGHT * 1.5));
+    this.visibleRows = Math.floor(window.innerHeight / (CAROUSEL_HEIGHT * 2));
     this.visibleRowRange = [0, this.visibleRows];
 
     window.addEventListener('resize', this.resizeEvent);
@@ -50,10 +51,6 @@ export default class Home extends Scene {
 
     for (let i = 0; i < categories.length; i++) {
       let category: Category = categories[i];
-
-      // TODO
-      // Load dynamically as scroll
-      await this.loadRefData(category);
 
       const carousel = new Carousel(category, i === 0 ? 0 : -1);
       carousel.position.set(0, i * CAROUSEL_HEIGHT);
@@ -152,6 +149,11 @@ export default class Home extends Scene {
       this.carousels[this.selectedCursor[0]].setSelected(
         this.selectedCursor[1]
       );
+
+      if (this.selectedCursor[0] + 1 < this.carousels.length) {
+        console.log(this.selectedCursor[0] + 1);
+        this.carousels[this.selectedCursor[0] + 1].loadRefData();
+      }
     }
   }
   onPreviousRow() {
@@ -191,21 +193,5 @@ export default class Home extends Scene {
     const content = this.carousels[this.selectedCursor[0]].onSelect();
 
     await this.main.toScene(new Info(this.main, content));
-  }
-  async loadRefData(category: Category): Promise<void> {
-    if (category?.set?.refId) {
-      const refResponse = await fetch(
-        `/api/sets/${category?.set?.refId}.json`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      const { data } = await refResponse.json();
-      category.set =
-        data?.CuratedSet || data?.TrendingSet || data?.PersonalizedCuratedSet;
-    }
   }
 }
