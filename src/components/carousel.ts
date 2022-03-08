@@ -12,7 +12,6 @@ export default class Carousel
   extends PIXI.Container
   implements UpdatableComponent
 {
-  public id: string;
   public refId?: string;
 
   public cards: Card[] = [];
@@ -28,12 +27,11 @@ export default class Carousel
   constructor(category: Category, selected: number = -1) {
     super();
 
-    this.id = category?.set?.setId;
     this.refId = category?.set?.refId;
 
     this.cards = [];
     this.selectedCard = selected;
-    this.visibleColumns = Math.floor(window.innerWidth / CARD_WIDTH) - 1;
+    this.visibleColumns = Math.floor(window.innerWidth / CARD_WIDTH) - 2;
     this.visibleColumnRange = [0, this.visibleColumns];
     this.hasLoadedCards = false;
 
@@ -102,12 +100,6 @@ export default class Carousel
       card.onUpdate(delta);
     }
   }
-
-  setSelected(windowSelected: number): void {
-    this.selectedCard = this.visibleColumnRange[0] + windowSelected;
-    this.cards[this.selectedCard].setSelected(true);
-  }
-
   onScrollRight(): number {
     if (this.selectedCard + 1 < this.cards.length) {
       this.cards[this.selectedCard].setSelected(false);
@@ -181,13 +173,17 @@ export default class Carousel
   onSelect(): Content {
     return this.cards[this.selectedCard].content;
   }
-
-  reset(): void {
+  onReset(): void {
     if (this.selectedCard >= 0) {
       this.cards[this.selectedCard].setSelected(false);
     }
 
     this.selectedCard = -1;
+  }
+
+  setSelected(windowSelected: number): void {
+    this.selectedCard = this.visibleColumnRange[0] + windowSelected;
+    this.cards[this.selectedCard].setSelected(true);
   }
 
   async loadRefData(): Promise<void> {

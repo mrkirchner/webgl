@@ -131,7 +131,7 @@ export default class Home extends Scene {
 
   onNextRow() {
     if (this.selectedCursor[0] + 1 < this.carousels.length) {
-      this.carousels[this.selectedCursor[0]].reset();
+      this.carousels[this.selectedCursor[0]].onReset();
 
       this.selectedCursor[0] = Math.min(
         this.visibleRowRange[1],
@@ -158,7 +158,7 @@ export default class Home extends Scene {
   }
   onPreviousRow() {
     if (this.selectedCursor[0] - 1 >= 0) {
-      this.carousels[this.selectedCursor[0]].reset();
+      this.carousels[this.selectedCursor[0]].onReset();
 
       this.selectedCursor[0] = Math.max(0, this.selectedCursor[0] - 1);
 
